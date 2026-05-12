@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>검침 입력 · 양산신도시 주공3단지</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+--bg: #0f1117;
+--surface: #1a1d27;
+--surface2: #22263a;
+--border: #2e3250;
+--accent: #4f7cff;
+--accent2: #ff6b35;
+--electric: #ffd600;
+--water: #00c8ff;
+--hotwater: #ff4d6d;
+--heat: #ff9500;
+--text: #e8eaf6;
+--muted: #7c82a8;
+--success: #00e676;
+--done-bg: #0a2e1a;
+--done-border: #00e676;
+--radius: 14px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+background: var(--bg);
+color: var(--text);
+font-family: 'Noto Sans KR', sans-serif;
+min-height: 100vh;
+padding-bottom: 40px;
+}
+
+/* ── HEADER ── */
+.header {
+background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+border-bottom: 1px solid var(--border);
+padding: 14px 16px;
+position: sticky; top: 0; z-index: 100;
+display: flex; align-items: center; gap: 10px;
+}
+.header-logo {
+width: 34px; height: 34px;
+background: var(--accent);
+border-radius: 10px;
+display: flex; align-items: center; justify-content: center;
+font-size: 17px; flex-shrink: 0;
+}
+.header-title { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+.header-sub   { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.btn-csv {
+margin-left: auto;
+background: var(--success); color: #000;
+border: none; border-radius: 20px;
+padding: 7px 14px; font-size: 12px; font-weight: 700;
+font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+}
+.btn-csv:active { opacity: 0.7; }
+
+/* ── STATS ── */
+.stats-bar {
+display: flex; gap: 0;
+background: var(--surface);
+border-bottom: 1px solid var(--border);
+padding: 8px 16px;
+}
+.stat { flex: 1; text-align: center; }
+.stat-n { font-size: 17px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--accent); }
+.stat-l { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.stat-d { width: 1px; background: var(--border); margin: 2px 0; }
+
+/* ── PROGRESS ── */
+.progress-wrap { background: var(--surface); padding: 0 16px 8px; border-bottom: 1px solid var(--border); }
+.progress-bg { background: var(--surface2); border-radius: 4px; height: 5px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); border-radius: 4px; transition: width 0.4s ease; }
+
+/* ── SECTION LABEL ── */
+.sec { padding: 14px 16px 0; }
+.sec-label {
+font-size: 10px; font-weight: 700; color: var(--muted);
+letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
+display: flex; align-items: center; gap: 6px;
+}
+.sec-label .cur-badge {
+background: var(--accent); color: #fff;
+font-size: 11px; font-weight: 700;
+border-radius: 6px; padding: 1px 8px;
+letter-spacing: 0; text-transform: none;
+}
+
+/* ── DONG GRID ── */
+.dong-grid {
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+gap: 7px;
+}
+.dong-btn {
+background: var(--surface);
+border: 1.5px solid var(--border);
+border-radius: 10px;
+color: var(--text);
+font-size: 13px; font-weight: 600;
+font-family: 'Noto Sans KR', sans-serif;
+padding: 10px 4px; cursor: pointer;
+text-align: center; position: relative;
+transition: all 0.13s;
+}
+.dong-btn:active { transform: scale(0.92); }
+.dong-btn.active {
+background: var(--accent); border-color: var(--accent);
+color: #fff; font-weight: 700;
+box-shadow: 0 4px 14px rgba(79,124,255,0.4);
+}
+.dong-btn .dot {
+display: block; width: 6px; height: 6px;
+background: var(--success); border-radius: 50%;
+position: absolute; top: 5px; right: 6px;
+}
+
+/* ── HO GRID ── */
+.ho-wrap {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: var(--radius);
+padding: 10px 8px;
+overflow-x: auto;
+}
+.ho-table { border-collapse: collapse; width: 100%; min-width: 200px; }
+.ho-table th {
+font-size: 10px; color: var(--muted); font-weight: 700;
+padding: 4px 3px; text-align: center;
+border-bottom: 1px solid var(--border);
+font-family: 'JetBrains Mono', monospace;
+}
+.ho-table td {
+padding: 3px 2px; text-align: center;
+}
+.floor-cell {
+font-size: 10px; color: var(--muted);
+font-family: 'JetBrains Mono', monospace;
+width: 22px; padding-right: 4px;
+}
+.ho-btn {
+background: var(--surface2);
+border: 1px solid var(--border);
+border-radius: 6px;
+color: var(--text);
+font-size: 11px;
+font-family: 'JetBrains Mono', monospace;
+padding: 5px 3px; width: 100%; min-width: 28px;
+cursor: pointer; transition: all 0.1s;
+display: block;
+}
+.ho-btn:active { transform: scale(0.85); }
+.ho-btn.active {
+background: var(--accent2); border-color: var(--accent2);
+color: #fff; font-weight: 700;
+box-shadow: 0 2px 8px rgba(255,107,53,0.4);
+}
+.ho-btn.done {
+background: var(--done-bg); border-color: var(--done-border);
+color: var(--success);
+}
+.ho-btn.done.active {
+background: var(--accent2); border-color: var(--accent2); color: #fff;
+}
+.ho-btn.empty { background: transparent; border-color: transparent; cursor: default; }
+
+/* ── INPUT CARD ── */
+.input-card {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: var(--radius);
+overflow: hidden;
+}
+.card-head {
+background: var(--surface2);
+border-bottom: 1px solid var(--border);
+padding: 11px 14px;
+display: flex; align-items: center; gap: 8px;
+}
+.card-dong { font-size: 18px; font-weight: 900; font-family: 'JetBrains Mono', monospace; color: var(--accent); }
+.card-lbl  { font-size: 12px; color: var(--muted); }
+
+.meter-row {
+display: flex; align-items: center;
+padding: 11px 14px; gap: 10px;
+border-bottom: 1px solid var(--border);
+}
+.meter-row:last-child { border-bottom: none; }
+.m-icon {
+width: 34px; height: 34px; border-radius: 9px;
+display: flex; align-items: center; justify-content: center;
+font-size: 16px; flex-shrink: 0;
+}
+.m-icon.e { background: rgba(255,214,0,0.13); }
+.m-icon.w { background: rgba(0,200,255,0.13); }
+.m-icon.h { background: rgba(255,77,109,0.13); }
+.m-icon.n { background: rgba(255,149,0,0.13); }
+
+.m-label { flex: 1; }
+.m-name { font-size: 12px; font-weight: 700; margin-bottom: 1px; }
+.m-name.e { color: var(--electric); }
+.m-name.w { color: var(--water); }
+.m-name.h { color: var(--hotwater); }
+.m-name.n { color: var(--heat); }
+.m-unit { font-size: 10px; color: var(--muted); }
+
+.m-input-wrap { position: relative; }
+.m-input {
+background: var(--bg); border: 1.5px solid var(--border);
+border-radius: 9px; color: var(--text);
+font-size: 16px; font-family: 'JetBrains Mono', monospace; font-weight: 700;
+padding: 8px 36px 8px 10px; width: 116px; text-align: right;
+outline: none; -webkit-appearance: none; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.m-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,124,255,0.18); }
+.m-input.e:focus { border-color: var(--electric); box-shadow: 0 0 0 3px rgba(255,214,0,0.13); }
+.m-input.w:focus { border-color: var(--water);    box-shadow: 0 0 0 3px rgba(0,200,255,0.13); }
+.m-input.h:focus { border-color: var(--hotwater); box-shadow: 0 0 0 3px rgba(255,77,109,0.13); }
+.m-input.n:focus { border-color: var(--heat);     box-shadow: 0 0 0 3px rgba(255,149,0,0.13); }
+.m-unit-badge {
+position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+font-size: 9px; color: var(--muted); pointer-events: none;
+}
+
+/* ── ACTION BUTTONS ── */
+.action-row { display: flex; gap: 8px; margin-top: 8px; padding: 0 16px; }
+.btn-save {
+flex: 1; background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+border: none; border-radius: var(--radius); color: #fff;
+font-size: 15px; font-weight: 700; font-family: 'Noto Sans KR', sans-serif;
+padding: 14px; cursor: pointer; transition: opacity 0.15s;
+}
+.btn-save:active { opacity: 0.75; }
+.btn-reset {
+background: var(--surface2); border: 1.5px solid var(--border);
+border-radius: var(--radius); color: var(--muted);
+font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+padding: 14px 16px; cursor: pointer;
+}
+.btn-reset:active { opacity: 0.6; }
+
+/* ── TOAST ── */
+.toast {
+position: fixed; bottom: 24px; left: 50%;
+transform: translateX(-50%) translateY(60px);
+background: var(--success); color: #000;
+font-weight: 700; font-size: 13px;
+padding: 10px 22px; border-radius: 24px; z-index: 999;
+transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+white-space: nowrap; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── HIDDEN ── */
+.hidden { display: none !important; }
+</style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">⚡</div>
+  <div>
+    <div class="header-title">양산신도시 주공3단지</div>
+    <div class="header-sub">검침 입력 보조 · 1,008세대</div>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;">
+    <button class="btn-csv" style="font-size:11px;padding:6px 10px;" onclick="downloadCSV('dong')">📥 동별</button>
+    <button class="btn-csv" style="font-size:11px;padding:6px 10px;background:#a78bfa;" onclick="downloadCSV('all')">📦 전체</button>
+    <button class="btn-csv" style="background:#ff4d6d;padding:6px 10px;" onclick="clearAllData()">🗑️</button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-n" id="s-done">0</div>
+    <div class="stat-l">완료</div>
+  </div>
+  <div class="stat-d"></div>
+  <div class="stat">
+    <div class="stat-n">1008</div>
+    <div class="stat-l">전체</div>
+  </div>
+  <div class="stat-d"></div>
+  <div class="stat">
+    <div class="stat-n" id="s-pct">0%</div>
+    <div class="stat-l">진행률</div>
+  </div>
+  <div class="stat-d"></div>
+  <div class="stat">
+    <div class="stat-n" id="s-cur">-</div>
+    <div class="stat-l">현재</div>
+  </div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-bg">
+    <div class="progress-fill" id="prog" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- ① 동 선택 -->
+<div class="sec">
+  <div class="sec-label">동 선택</div>
+  <div class="dong-grid" id="dong-grid"></div>
+</div>
+
+<!-- ② 호 선택 -->
+<div class="sec hidden" id="sec-ho">
+  <div class="sec-label">
+    호 선택
+    <span class="cur-badge" id="ho-badge">301동</span>
+  </div>
+  <div class="ho-wrap">
+    <table class="ho-table" id="ho-table"></table>
+  </div>
+</div>
+
+<!-- ③ 검침 입력 -->
+<div class="sec hidden" id="sec-input">
+  <div class="sec-label">
+    검침 입력
+    <span class="cur-badge" id="input-badge">301동 101호</span>
+  </div>
+  <div class="input-card">
+    <div class="card-head">
+      <span class="card-dong" id="card-dong">-</span>
+      <span class="card-lbl">검침값 입력</span>
+    </div>
+    <div class="meter-row">
+      <div class="m-icon e">⚡</div>
+      <div class="m-label"><div class="m-name e">전기</div><div class="m-unit">kWh</div></div>
+      <div class="m-input-wrap">
+        <input class="m-input e" id="inp-e" type="number" inputmode="decimal" placeholder="0.0" autocomplete="off">
+        <span class="m-unit-badge">kWh</span>
+      </div>
+    </div>
+    <div class="meter-row">
+      <div class="m-icon w">💧</div>
+      <div class="m-label"><div class="m-name w">수도</div><div class="m-unit">m³</div></div>
+      <div class="m-input-wrap">
+        <input class="m-input w" id="inp-w" type="number" inputmode="decimal" placeholder="0.0" autocomplete="off">
+        <span class="m-unit-badge">m³</span>
+      </div>
+    </div>
+    <div class="meter-row">
+      <div class="m-icon h">🚿</div>
+      <div class="m-label"><div class="m-name h">온수</div><div class="m-unit">m³</div></div>
+      <div class="m-input-wrap">
+        <input class="m-input h" id="inp-h" type="number" inputmode="decimal" placeholder="0.0" autocomplete="off">
+        <span class="m-unit-badge">m³</span>
+      </div>
+    </div>
+    <div class="meter-row">
+      <div class="m-icon n">🌡️</div>
+      <div class="m-label"><div class="m-name n">난방</div><div class="m-unit">m³</div></div>
+      <div class="m-input-wrap">
+        <input class="m-input n" id="inp-n" type="number" inputmode="decimal" placeholder="0.0" autocomplete="off">
+        <span class="m-unit-badge">m³</span>
+      </div>
+    </div>
+  </div>
+  <div class="action-row" style="margin-top:10px; padding:0;">
+    <button class="btn-save" onclick="saveEntry()">💾 저장 · 다음 호</button>
+    <button class="btn-reset" onclick="resetInputs()">초기화</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  동별 세대 구성
+// ═══════════════════════════════════════════
+const DONG_CFG = {
+  301: { floors:10, units:[1,2,3,4,5,6], excl:[] },
+  302: { floors:10, units:[1,2,3,4,5,6], excl:['103'] },
+  303: { floors:10, units:[1,2,3,4,5,6], excl:[] },
+  304: { floors:15, units:[1,2,3,4],     excl:[] },
+  305: { floors:15, units:[1,2,3,4],     excl:[] },
+  306: { floors:15, units:[1,2,3,4,5,6], excl:['101','1306','1406','1506'] },
+  307: { floors:15, units:[1,2,3,4,5,6], excl:['101'] },
+  308: { floors:15, units:[1,2,3,4,5,6], excl:['106'] },
+  309: { floors:15, units:[1,2,3,4,5,6,7,8],
+         excl:['104','105','1401','1402','1403','1404','1501','1502','1503','1504'] },
+  310: { floors:15, units:[1,2,3,4,5,6,7,8],
+         excl:['104','105','1405','1406','1407','1408','1505','1506','1507','1508'] },
+  311: { floors:15, units:[1,2,3,4],
+         excl:['104','1401','1402','1501','1502'] },
+  312: { floors:15, units:[1,2,3,4,5,6],
+         excl:['104','1401','1402','1501','1502'] },
+  313: { floors:15, units:[1,2,3,4,5,6],
+         excl:['106','1401','1402','1501','1502'] },
+};
+
+function getHoList(dong) {
+  const { floors, units, excl } = DONG_CFG[dong];
+  const list = [];
+  for (let f = 1; f <= floors; f++) {
+    for (let u of units) {
+      const hoStr = String(f * 100 + u);
+      if (isExcl(f, u, hoStr, excl)) continue;
+      list.push(hoStr);
+    }
+  }
+  return list;
+}
+
+function isExcl(floor, unit, hoStr, excl) {
+  return excl.includes(hoStr);
+}
+
+// ═══════════════════════════════════════════
+//  State
+// ═══════════════════════════════════════════
+let records = {};
+let selDong = null;
+let selHo   = null;
+
+// ═══════════════════════════════════════════
+//  동 그리드
+// ═══════════════════════════════════════════
+function buildDongGrid() {
+  const grid = document.getElementById('dong-grid');
+  grid.innerHTML = '';
+  Object.keys(DONG_CFG).forEach(d => {
+    const dong = parseInt(d);
+    const btn = document.createElement('button');
+    btn.className = 'dong-btn';
+    btn.dataset.dong = dong;
+    btn.innerHTML = dong + '<br><span style="font-size:9px;color:var(--muted);font-weight:400" id="dstat-'+dong+'">-</span>';
+    btn.onclick = () => selectDong(dong);
+    grid.appendChild(btn);
+  });
+  updateDongStats();
+}
+
+function updateDongStats() {
+  Object.keys(DONG_CFG).forEach(d => {
+    const dong = parseInt(d);
+    const total = getHoList(dong).length;
+    const done  = getHoList(dong).filter(h => records[dong+'-'+h]).length;
+    const el = document.getElementById('dstat-'+dong);
+    if (el) el.textContent = done + '/' + total;
+    const btn = document.querySelector(`.dong-btn[data-dong="${dong}"]`);
+    if (!btn) return;
+    const existing = btn.querySelector('.dot');
+    if (done > 0 && !existing) {
+      const dot = document.createElement('span'); dot.className = 'dot';
+      btn.appendChild(dot);
+    } else if (done === 0 && existing) existing.remove();
+  });
+}
+
+// ═══════════════════════════════════════════
+//  동 선택
+// ═══════════════════════════════════════════
+function selectDong(dong) {
+  selDong = dong;
+  selHo   = null;
+
+  document.querySelectorAll('.dong-btn').forEach(b =>
+    b.classList.toggle('active', parseInt(b.dataset.dong) === dong));
+
+  buildHoTable(dong);
+  document.getElementById('sec-ho').classList.remove('hidden');
+  document.getElementById('sec-input').classList.add('hidden');
+  document.getElementById('ho-badge').textContent = dong + '동';
+
+  document.getElementById('sec-ho').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ═══════════════════════════════════════════
+//  호 테이블
+// ═══════════════════════════════════════════
+function buildHoTable(dong) {
+  const cfg = DONG_CFG[dong];
+  const table = document.getElementById('ho-table');
+  table.innerHTML = '';
+
+  const thead = document.createElement('thead');
+  let thRow = '<tr><th>층</th>';
+  cfg.units.forEach(u => { thRow += `<th>${u}호</th>`; });
+  thRow += '</tr>';
+  thead.innerHTML = thRow;
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  for (let f = cfg.floors; f >= 1; f--) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="floor-cell">${f}</td>`;
+    for (let u of cfg.units) {
+      const hoStr = String(f * 100 + u);
+      const isExcluded = isExcl(f, u, hoStr, cfg.excl);
+      const td = document.createElement('td');
+      if (isExcluded) {
+        td.innerHTML = '<button class="ho-btn empty" disabled></button>';
+      } else {
+        const key = dong + '-' + hoStr;
+        const isDone = records[key] ? ' done' : '';
+        const isActive = selHo === hoStr ? ' active' : '';
+        const label = u;
+        td.innerHTML = `<button class="ho-btn${isDone}${isActive}" data-ho="${hoStr}" onclick="selectHo('${hoStr}')">${label}</button>`;
+      }
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+  table.appendChild(tbody);
+}
+
+function refreshHoBtns(dong) {
+  document.querySelectorAll('#ho-table .ho-btn:not(.empty)').forEach(btn => {
+    const key = dong + '-' + btn.dataset.ho;
+    btn.classList.toggle('done',   !!records[key]);
+    btn.classList.toggle('active', btn.dataset.ho === selHo);
+  });
+}
+
+// ═══════════════════════════════════════════
+//  호 선택
+// ═══════════════════════════════════════════
+function selectHo(hoStr) {
+  selHo = hoStr;
+
+  document.querySelectorAll('#ho-table .ho-btn:not(.empty)').forEach(b =>
+    b.classList.toggle('active', b.dataset.ho === hoStr));
+
+  const key = selDong + '-' + hoStr;
+  const saved = records[key] || {};
+  document.getElementById('inp-e').value = saved.electric  || '';
+  document.getElementById('inp-w').value = saved.water     || '';
+  document.getElementById('inp-h').value = saved.hotwater  || '';
+  document.getElementById('inp-n').value = saved.heat      || '';
+
+  document.getElementById('card-dong').textContent    = selDong + '동 ' + hoStr + '호';
+  document.getElementById('input-badge').textContent  = selDong + '동 ' + hoStr + '호';
+  document.getElementById('s-cur').textContent        = selDong + '-' + hoStr;
+  document.getElementById('sec-input').classList.remove('hidden');
+
+  document.getElementById('sec-input').scrollIntoView({ behavior:'smooth', block:'start' });
+  setTimeout(() => document.getElementById('inp-e').focus(), 150);
+}
+
+// ═══════════════════════════════════════════
+//  저장
+// ═══════════════════════════════════════════
+function saveEntry() {
+  if (!selDong || !selHo) return;
+  const e = (document.getElementById('inp-e').value || '').trim();
+  const w = (document.getElementById('inp-w').value || '').trim();
+  const h = (document.getElementById('inp-h').value || '').trim();
+  const n = (document.getElementById('inp-n').value || '').trim();
+  if (!e && !w && !h && !n) { showToast('⚠️ 하나 이상 입력하세요'); return; }
+
+  const key = selDong + '-' + selHo;
+  records[key] = {
+    dong: selDong, ho: selHo,
+    electric: e, water: w, hotwater: h, heat: n,
+    savedAt: new Date().toLocaleTimeString('ko-KR')
+  };
+
+  updateStats();
+  refreshHoBtns(selDong);
+  updateDongStats();
+  saveToLocal();
+  showToast('✅ ' + selDong + '동 ' + selHo + '호 저장!');
+
+  const hoList = getHoList(selDong);
+  const idx = hoList.indexOf(selHo);
+  if (idx >= 0 && idx < hoList.length - 1) {
+    const nextHo = hoList[idx + 1];
+    setTimeout(() => selectHo(nextHo), 350);
+    setTimeout(() => {
+      const nb = document.querySelector(`#ho-table .ho-btn[data-ho="${nextHo}"]`);
+      if (nb) nb.scrollIntoView({ block:'nearest', behavior:'smooth' });
+    }, 400);
+  } else {
+    showToast('🎉 ' + selDong + '동 검침 완료!');
+  }
+}
+
+function resetInputs() {
+  ['inp-e','inp-w','inp-h','inp-n'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('inp-e').focus();
+}
+
+// ═══════════════════════════════════════════
+//  엔터키로 다음 항목 이동
+// ═══════════════════════════════════════════
+const INPUT_IDS = ['inp-e','inp-w','inp-h','inp-n'];
+INPUT_IDS.forEach((id, i) => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (i < INPUT_IDS.length - 1) document.getElementById(INPUT_IDS[i+1]).focus();
+      else saveEntry();
+    }
+  });
+});
+
+// ═══════════════════════════════════════════
+//  통계
+// ═══════════════════════════════════════════
+function updateStats() {
+  const done  = Object.keys(records).length;
+  const total = 1008;
+  const pct   = Math.round(done / total * 100);
+  document.getElementById('s-done').textContent = done;
+  document.getElementById('s-pct').textContent  = pct + '%';
+  document.getElementById('prog').style.width   = pct + '%';
+}
+
+// ═══════════════════════════════════════════
+//  CSV
+// ═══════════════════════════════════════════
+function downloadCSV(mode) {
+  if (!Object.keys(records).length) { showToast('⚠️ 저장된 데이터 없음'); return; }
+  const now = new Date();
+  const yearMonth = now.getFullYear()+'년'+(now.getMonth()+1)+'월';
+  const header = '\uFEFF동,호,전기(kWh),수도(m³),온수(m³),난방(m³),저장시각\n';
+
+  const dongsWithData = [];
+  Object.keys(DONG_CFG).forEach(d => {
+    const dong = parseInt(d);
+    const rows = [];
+    getHoList(dong).forEach(ho => {
+      const key = dong + '-' + ho;
+      if (records[key]) rows.push(records[key]);
+    });
+    if (rows.length > 0) dongsWithData.push({ dong, rows });
+  });
+
+  if (dongsWithData.length === 0) { showToast('⚠️ 저장된 데이터 없음'); return; }
+
+  if (mode === 'all') {
+    let csv = header;
+    dongsWithData.forEach(item => {
+      item.rows.forEach(r => {
+        csv += [r.dong+'동', r.ho+'호', r.electric, r.water, r.hotwater, r.heat, r.savedAt].join(',') + '\n';
+      });
+    });
+    const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = yearMonth+'_전체_검침데이터.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('📦 전체 CSV 저장 완료! (' + dongsWithData.length + '개 동)');
+
+  } else {
+    dongsWithData.forEach((item, idx) => {
+      setTimeout(() => {
+        let csv = header;
+        item.rows.forEach(r => {
+          csv += [r.dong+'동', r.ho+'호', r.electric, r.water, r.hotwater, r.heat, r.savedAt].join(',') + '\n';
+        });
+        const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+        const url  = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = yearMonth+'_'+item.dong+'동_검침데이터.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }, idx * 800);
+    });
+    showToast('📥 동별 CSV ' + dongsWithData.length + '개 저장 완료!');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  데이터 초기화
+// ═══════════════════════════════════════════
+function clearAllData() {
+  if (!confirm('모든 입력 데이터를 삭제할까요?')) return;
+  records = {};
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  updateStats();
+  updateDongStats();
+  if (selDong) buildHoTable(selDong);
+  document.getElementById('sec-input').classList.add('hidden');
+  showToast('🗑️ 데이터 초기화 완료');
+}
+
+// ═══════════════════════════════════════════
+//  토스트
+// ═══════════════════════════════════════════
+let _tt;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════════════
+//  localStorage 자동저장
+// ═══════════════════════════════════════════
+const STORAGE_KEY = 'jeomsim_records_v1';
+
+function saveToLocal() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); } catch(e) {}
+}
+
+function loadFromLocal() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      records = JSON.parse(data);
+      updateStats();
+      updateDongStats();
+    }
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════
+//  초기화
+// ═══════════════════════════════════════════
+buildDongGrid();
+loadFromLocal();
+</script>
+
+</body>
+</html>
